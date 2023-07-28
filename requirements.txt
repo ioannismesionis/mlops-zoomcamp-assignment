@@ -1,0 +1,11 @@
+pandas
+numpy
+prefect
+evidently
+scikit-learn
+pytest
+pyarrow
+feature-engine
+mlflow
+optuna
+xgboost

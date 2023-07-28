@@ -1,0 +1,38 @@
+[settings]
+pipeline = "training" # "training" or "testing" pipelines are allowed.
+
+[mlflow]
+hyperparams_experiment_name = "random-forest-hyperparameters"
+max_results = 5
+
+[preprocessing]
+drop_cols = ["posting_date"]
+cat_variables = [
+    "manufacturer",
+    "fuel",
+    "title_status",
+    "transmission",
+    "type",
+    "paint_color",
+]
+
+[preprocessing.raw_data]
+train_data_path = "./src/data/raw/vehicles_2023-04.parquet"
+test_data_path = "./src/data/raw/vehicles_2023-05.parquet"
+
+[preprocessing.processed_data]
+dest_path = "./src/data/preprocessed/"
+
+[preprocessing.transformers]
+encoder_path = "./src/data/transformers/"
+
+
+[training]
+[training.processed_data]
+preprocessed_train_df = "./src/data/preprocessed/train_df.parquet"
+final_data_path = "./src/data/final"
+
+
+
+[training.hyperparams_settings]
+num_trials = 10
