@@ -10,6 +10,6 @@ COPY . /app
 # Install Python dependencies from requirements.txt
 RUN pip install -r requirements.txt
 
-# Set the entry point for the container (replace 'app.py' with your application's main Python script)
+# Set the entry point for the container 
 # CMD ["python", "./src/ml/inference.py"]
 ENTRYPOINT [ "python", "./src/ml/inference.py"]
