@@ -57,7 +57,7 @@ def encode_categorical_variables(
     default="./src/config/config.toml",
     help="Path to config for orchestration",
 )
-@flow(name="Running Preprocessing flow")
+@flow
 def run_preprocessing(config_path: str):
     # Unpack the configuration file
     config = read_toml_config(config_path)
