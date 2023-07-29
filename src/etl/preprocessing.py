@@ -1,19 +1,17 @@
 # Import python libraries
 import pandas as pd
-from datetime import datetime
 from prefect import flow, task
 import click
-import os
-import sys
+import os, sys
 from typing import List
 from feature_engine.encoding import MeanEncoder
 
+# Define entry point for paths
 CWD = os.getcwd()
 os.chdir(CWD)
 sys.path.append(CWD)
 
-
-# Import customer libraries
+# Import helper functions
 from src.etl.utils import read_toml_config, read_parquet_file, dump_pickle, load_pickle
 
 
@@ -33,15 +31,11 @@ def encode_categorical_variables(
         encoder = MeanEncoder(variables=cat_variables)
         encoder.fit(df.drop(target, axis=1), df[target])
 
-        # Save the encoder
-        month = datetime.now().month
-        day = datetime.now().day
-        encoder_path = f"./src/etl/transformers/{month:02d}_{day:02d}_mean_encoder.pkl"
+        # Save the encoder to a pre-specified path
+        encoder_path = f"./src/etl/transformers/mean_encoder.pkl"
         dump_pickle(encoder, encoder_path)
 
-    # Transform using the encoder
     else:
-        # load encoder
         encoder = load_pickle(encoder_path)
 
     # Transform the data by encoding categorical variables
@@ -57,40 +51,54 @@ def encode_categorical_variables(
     default="./src/config/config.toml",
     help="Path to config for orchestration",
 )
-@flow(name="Running Preprocessing flow")
-def run_preprocessing(config_path: str):
-    # Unpack the configuration file
+@flow(name="Running Preprocessing Flow")
+def run_preprocessing(config_path: str) -> None:
+    """Run the preprocessing pipeline step by step.
+
+    Args:
+        config_path (str): Path to config
+
+    Returns:
+        None
+    """
+    # Read the config file
     config = read_toml_config(config_path)
 
+    # Unpack config file
     pipeline = config["settings"]["pipeline"]
+    drop_cols = config["preprocessing"]["drop_cols"]
+    cat_variables = config["preprocessing"]["cat_variables"]
+    preprocessed_data_path = config["preprocessing"]["processed_data"][
+        "preprocessed_data_path"
+    ]
 
-    dest_path = config["preprocessing"]["processed_data"]["dest_path"]
-
+    # If "training" pipeline
     if pipeline == "training":
         # Unpack config file for the training pipeline
         train_data_path = config["preprocessing"]["raw_data"]["train_data_path"]
-        drop_cols = config["preprocessing"]["drop_cols"]
-        cat_variables = config["preprocessing"]["cat_variables"]
 
-        # Read the training data
+        # Run preprocessing steps
         df = read_parquet_file(train_data_path)
-
         df = drop_columns(df, drop_cols)
-
-        # Encode categorical features
         df = encode_categorical_variables(df, cat_variables)
 
-        # Save the training data
-        save_path = os.path.join(dest_path, "train_df.parquet")
+        # Save the preprocessed training data
+        save_path = os.path.join(preprocessed_data_path, "train_df.parquet")
         df.to_parquet(save_path, engine="pyarrow")
 
-    elif pipeline == "testing":
-        # Step 1:
-        # Step 2:
-        df.to_parquet(os.path.join(dest_path, "test_df.parquet"), engine="pyarrow")
-        # dump_pickle(df, os.path.join(dest_path, "test_df.pkl"))
+    # If "inference" pipeline
+    elif pipeline == "inference":
+        # Unpack config file for the training pipeline
+        test_data_path = config["preprocessing"]["raw_data"]["test_data_path"]
 
-        ...
+        # Run preprocessing steps
+        df = read_parquet_file(test_data_path)
+        df = drop_columns(df, drop_cols)
+        df = encode_categorical_variables(df, cat_variables)
+
+        # Save the preprocessed training data
+        save_path = os.path.join(preprocessed_data_path, "test_df.parquet")
+        df.to_parquet(save_path, engine="pyarrow")
 
 
 if __name__ == "__main__":

@@ -1,9 +1,13 @@
-import os, sys
+# Import python libraries
+import os
+import sys
 
+# Define entry point for paths
 CWD = os.getcwd()
 os.chdir(CWD)
 sys.path.append(CWD)
 
+# Import helper functions
 from src.etl.utils import read_toml_config, read_parquet_file, dump_pickle, load_pickle
 from src.etl.preprocessing import drop_columns
 
@@ -31,8 +35,6 @@ def run_inference(config_path: str) -> None:
     # 5. Load model
     # TODO: Can I load from MLflow??
     y_pred = model.predict(test_df)
-
-    print("Mean prediction", y_pred.mean())
 
 
 if __name__ == "__main__":

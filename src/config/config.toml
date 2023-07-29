@@ -21,7 +21,7 @@ train_data_path = "./src/data/raw/vehicles_2023-04.parquet"
 test_data_path = "./src/data/raw/vehicles_2023-05.parquet"
 
 [preprocessing.processed_data]
-dest_path = "./src/data/preprocessed/"
+preprocessed_data_path = "./src/data/preprocessed/"
 
 [preprocessing.transformers]
 encoder_path = "./src/data/transformers/"
