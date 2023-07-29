@@ -8,8 +8,8 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper functions
-from src.etl.utils import read_toml_config, read_parquet_file, dump_pickle, load_pickle
-from src.etl.preprocessing import drop_columns
+from src.etl.utils import read_toml_config, read_parquet_file
+from src.etl.preprocessing import drop_columns, encode_categorical_variables
 
 
 def run_inference(config_path: str) -> None:
@@ -18,6 +18,7 @@ def run_inference(config_path: str) -> None:
 
     # Unpack configuration file
     drop_cols = config["preprocessing"]["drop_cols"]
+    categ_variables = config["preprocessing"]["cat_variables"]
     test_df_path = config["inference"]["test_df_path"]
     cat_encoder_path = config["inference"]["cat_encoder_path"]
     model_path = config["inference"]["model_path"]
@@ -28,9 +29,13 @@ def run_inference(config_path: str) -> None:
     # 3. Drop columns
     test_df = drop_columns(test_df, drop_cols)
 
-    # 4. Load encoder
-    cat_encoder = load_pickle(cat_encoder_path)
-    test_df = cat_encoder.transform(test_df)
+    # 4. Encode categorical variables
+    test_df = encode_categorical_variables(
+        test_df,
+        cat_variables=categ_variables,
+        fit_encoder=False,
+        encoder_path=cat_encoder_path,
+    )
 
     # 5. Load model
     # TODO: Can I load from MLflow??

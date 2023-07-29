@@ -33,7 +33,6 @@ preprocessed_train_df = "./src/data/preprocessed/train_df.parquet"
 final_data_path = "./src/data/final"
 
 
-
 [training.hyperparams_settings]
 num_trials = 10
 
@@ -41,4 +40,4 @@ num_trials = 10
 [inference]
 test_df_path = "./src/data/vehicles_2023-05.parquet"
 cat_encoder_path = "./src/etl/transformers/07_29_mean_encoder.pkl"
-model_path = "./src/data/
+model_path = "./src/etl/transformers/model.pkl"
