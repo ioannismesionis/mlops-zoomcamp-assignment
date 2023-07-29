@@ -41,6 +41,8 @@ def run_inference(config_path: str) -> None:
     # TODO: Can I load from MLflow??
     y_pred = model.predict(test_df)
 
+    print("Mean predictions:", y_pred.mean())
+
 
 if __name__ == "__main__":
     run_inference()
