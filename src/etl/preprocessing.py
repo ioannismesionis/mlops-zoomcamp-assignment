@@ -1,6 +1,7 @@
 # Import python libraries
 import pandas as pd
 from datetime import datetime
+from prefect import flow, task
 import click
 import os
 import sys
@@ -20,6 +21,7 @@ def drop_columns(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
     return df.drop(columns, axis=1)
 
 
+@task(retries=3, retry_delay_seconds=2, name="Encode categorical features")
 def encode_categorical_variables(
     df: pd.DataFrame,
     cat_variables: list[str],
@@ -55,6 +57,7 @@ def encode_categorical_variables(
     default="./src/config/config.toml",
     help="Path to config for orchestration",
 )
+@flow(name="Running Preprocessing flow")
 def run_preprocessing(config_path: str):
     # Unpack the configuration file
     config = read_toml_config(config_path)

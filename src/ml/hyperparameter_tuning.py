@@ -4,6 +4,7 @@ import click
 import mlflow
 import pandas as pd
 import optuna
+from prefect import flow, task
 from optuna.samplers import TPESampler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
@@ -23,6 +24,7 @@ mlflow.set_tracking_uri("sqlite:///mlflow.db")
 mlflow.set_experiment("random-forest-hyperparameters")
 
 
+@task(retries=3, retry_delay_seconds=2, name="Splitting data into train and validation")
 def create_train_test_split(df: pd.DataFrame, target: str = "price") -> pd.DataFrame:
     X = df.drop(target, axis=1)
     y = df[target]
@@ -46,6 +48,7 @@ def create_train_test_split(df: pd.DataFrame, target: str = "price") -> pd.DataF
     default="./src/config/config.toml",
     help="Path to config for orchestration",
 )
+@flow(name="Run hyperparameter tuning flow")
 def run_hyperparameter_tuning(config_path: str):
     # Unpack the configuration file
     config = read_toml_config(config_path)
