@@ -40,4 +40,8 @@ num_trials = 10
 [inference]
 test_df_path = "./src/data/raw/vehicles_2023-05.parquet"
 cat_encoder_path = "./src/etl/transformers/07_29_mean_encoder.pkl"
-model_run_path = "runs:/a0713acb5713422aae494efba5dc2912/mlflow_models"
+model_run_path = "./src/etl/transformers/"
+
+[monitoring]
+reference_data_path = "./src/data/preprocessed/train_df.parquet"
+current_data_path = "./src/data/preprocessed/test_df.parquet"

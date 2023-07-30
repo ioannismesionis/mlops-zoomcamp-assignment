@@ -17,8 +17,7 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper function
-from src.etl.utils import (dump_pickle, load_pickle, read_parquet_file,
-                           read_toml_config)
+from src.etl.utils import load_pickle, read_toml_config
 
 # Define mlflow tracking parameters
 _EXPERIMENT_NAME = "random-forest-best-model"
