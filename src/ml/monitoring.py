@@ -2,6 +2,10 @@
 import os
 import sys
 import click
+import warnings
+
+warnings.filterwarnings("ignore")
+
 from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset, RegressionPreset
@@ -16,12 +20,25 @@ from src.etl.utils import read_parquet_file, read_toml_config
 from src.ml.inference import get_best_model
 
 
+@click.command()
 @click.option(
     "--config_path",
     default="./src/config/config.toml",
     help="Path to config for orchestration",
 )
 def run_monitoring(config_path: str) -> None:
+    """Run the data drift and performance monitor process.
+
+    Args:
+        config_path (str): Configuration
+
+    Returns:
+        None
+    """
+    # Read the config file
+    config = read_toml_config(config_path)
+
+    # Unpack config file
     reference_data_path = config["monitoring"]["reference_data_path"]
     current_data_path = config["monitoring"]["current_data_path"]
     model_run_path = config["inference"]["model_run_path"]
@@ -35,11 +52,11 @@ def run_monitoring(config_path: str) -> None:
     current_df = read_parquet_file(current_data_path)
 
     # 3. Load model
-    model = get_best_model(model_run_path)
+    model = get_best_model.fn(model_run_path)
 
     # 4. Predict on current and reference data
-    current_pred = model.predict(current_df)
-    reference_pred = model.predict(reference_df)
+    current_pred = model.predict(current_df.drop("price", axis=1))
+    reference_pred = model.predict(reference_df.drop("price", axis=1))
 
     current_df["prediction"] = current_pred
     reference_df["prediction"] = reference_pred
@@ -67,9 +84,9 @@ def run_monitoring(config_path: str) -> None:
         column_mapping=column_mapping,
     )
     print("Saving...")
-    regression_report.save_html("test_suite.html")
-    drift_report.save_html("test_drift_report.html")
+    regression_report.save_html("./workspace/test_suite.html")
+    drift_report.save_html("./workspace/test_drift_report.html")
 
 
-if __name__ == " __main__":
+if __name__ == "__main__":
     run_monitoring()

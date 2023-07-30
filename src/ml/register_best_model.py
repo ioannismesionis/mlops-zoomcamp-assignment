@@ -10,6 +10,9 @@ from mlflow.tracking import MlflowClient
 from prefect import flow, task
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
+import warnings
+
+warnings.filterwarnings("ignore")
 
 # Define entry point for paths
 CWD = os.getcwd()
@@ -20,8 +23,7 @@ sys.path.append(CWD)
 from src.etl.utils import dump_pickle, load_pickle, read_toml_config
 
 # Define mlflow tracking parameters
-# mlflow.set_tracking_uri("http://127.0.0.1:5000")
-mlflow.set_tracking_uri("sqlite:///mlflow.db")
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 
 
 @task(retries=3, retry_delay_seconds=2, name="Train best random forest")
