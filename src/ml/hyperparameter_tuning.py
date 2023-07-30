@@ -24,7 +24,6 @@ from src.etl.utils import dump_pickle, read_parquet_file, read_toml_config
 mlflow.set_tracking_uri(
     "http://127.0.0.1:5000"
 )  # mlflow.set_tracking_uri("sqlite:///mlflow.db")
-mlflow.set_experiment("random-forest-hyperparameters")
 
 
 @task(retries=3, retry_delay_seconds=2, name="Splitting into train and validation sets")
@@ -64,6 +63,8 @@ def run_hyperparameter_tuning(config_path: str) -> None:
     Returns:
         None
     """
+    mlflow.set_experiment("random-forest-hyperparameters")
+
     # Read the configuration file
     config = read_toml_config(config_path)
 
