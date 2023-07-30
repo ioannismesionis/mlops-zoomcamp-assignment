@@ -19,6 +19,11 @@ jobs:
           python-version: '3.11'  # Replace 'x' with the desired Python version (e.g., 3.6, 3.7, 3.8).
 
       - name: Install dependencies
+        run: |
+          pip install black pytest
+          pip install -r requirements.txt
+
+      - name: Install dependencies
         run: pip install black pytest
 
       - name: Run Black formatter

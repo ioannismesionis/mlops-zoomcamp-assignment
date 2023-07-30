@@ -7,8 +7,6 @@ CWD = os.getcwd()
 os.chdir(CWD)
 sys.path.append(CWD)
 
-# import toml
-# import pytest
 from src.etl.utils import read_toml_config
 
 
