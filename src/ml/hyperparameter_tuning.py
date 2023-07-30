@@ -25,7 +25,7 @@ mlflow.set_experiment("random-forest-hyperparameters")
 
 @task(retries=3, retry_delay_seconds=2, name="Splitting into train and validation sets")
 def create_train_and_validation_sets(
-    df: pd.DataFrame, target: str = "price"
+    df: pd.DataFrame, target: str = "price", save=True
 ) -> pd.DataFrame:
     X = df.drop(target, axis=1)
     y = df[target]
@@ -36,9 +36,10 @@ def create_train_and_validation_sets(
     )
 
     # Save training and validation sets
-    final_data_path = "./src/data/final"
-    dump_pickle((X_train, y_train), os.path.join(final_data_path, "train.pkl"))
-    dump_pickle((X_val, y_val), os.path.join(final_data_path, "val.pkl"))
+    if save:
+        final_data_path = "./src/data/final"
+        dump_pickle((X_train, y_train), os.path.join(final_data_path, "train.pkl"))
+        dump_pickle((X_val, y_val), os.path.join(final_data_path, "val.pkl"))
 
     return X_train, X_val, y_train, y_val
 

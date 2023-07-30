@@ -9,3 +9,4 @@ feature-engine
 mlflow
 optuna
 xgboost
+black
