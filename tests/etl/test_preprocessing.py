@@ -2,16 +2,15 @@
 import os
 import sys
 
+import pandas as pd
+
 # Define entry point for paths
 CWD = os.getcwd()
 os.chdir(CWD)
 sys.path.append(CWD)
 
-
-import pandas as pd
-from src.etl.preprocessing import (
-    drop_columns,
-)  # Replace 'your_module' with the actual module containing the function
+# Import function to be tested
+from src.etl.preprocessing import drop_columns
 
 
 def test_drop_columns():

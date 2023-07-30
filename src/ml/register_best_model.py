@@ -1,11 +1,13 @@
 # Import python libraries
-import os, sys
-import pickle
+import os
+import sys
+from typing import Dict
+
 import click
-from prefect import flow, task
 import mlflow
 from mlflow.entities import ViewType
 from mlflow.tracking import MlflowClient
+from prefect import flow, task
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 
@@ -15,7 +17,8 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper function
-from src.etl.utils import read_toml_config, read_parquet_file, dump_pickle, load_pickle
+from src.etl.utils import (dump_pickle, load_pickle, read_parquet_file,
+                           read_toml_config)
 
 # Define mlflow tracking parameters
 _EXPERIMENT_NAME = "random-forest-best-model"

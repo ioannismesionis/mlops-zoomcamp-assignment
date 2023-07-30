@@ -1,11 +1,13 @@
 # Import python libraries
-import os, sys
+import os
+import sys
+
 import click
 import mlflow
-import pandas as pd
 import optuna
-from prefect import flow, task
+import pandas as pd
 from optuna.samplers import TPESampler
+from prefect import flow, task
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
@@ -16,7 +18,7 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper functions
-from src.etl.utils import read_toml_config, read_parquet_file, dump_pickle
+from src.etl.utils import dump_pickle, read_parquet_file, read_toml_config
 
 # Define mlflow parameters for tracking
 mlflow.set_tracking_uri("sqlite:///mlflow.db")

@@ -1,10 +1,12 @@
 # Import python libraries
-import pandas as pd
-from prefect import flow, task
-import click
-import os, sys
+import os
+import sys
 from typing import List
+
+import click
+import pandas as pd
 from feature_engine.encoding import MeanEncoder
+from prefect import flow, task
 
 # Define entry point for paths
 CWD = os.getcwd()
@@ -12,7 +14,8 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper functions
-from src.etl.utils import read_toml_config, read_parquet_file, dump_pickle, load_pickle
+from src.etl.utils import (dump_pickle, load_pickle, read_parquet_file,
+                           read_toml_config)
 
 
 def drop_columns(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:

@@ -13,9 +13,8 @@ sys.path.append(CWD)
 
 
 import pandas as pd
-from src.ml.hyperparameter_tuning import (
-    create_train_and_validation_sets,
-)
+
+from src.ml.hyperparameter_tuning import create_train_and_validation_sets
 
 
 # Helper function to create a sample DataFrame

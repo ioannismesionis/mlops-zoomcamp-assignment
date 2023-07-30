@@ -1,6 +1,7 @@
+import pickle
+
 import pandas as pd
 import toml
-import pickle
 
 
 def read_toml_config(path: str) -> dict:

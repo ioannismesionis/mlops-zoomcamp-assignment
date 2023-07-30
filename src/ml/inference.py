@@ -7,9 +7,9 @@ CWD = os.getcwd()
 os.chdir(CWD)
 sys.path.append(CWD)
 
-# Import helper functions
-from src.etl.utils import read_toml_config, read_parquet_file
 from src.etl.preprocessing import drop_columns, encode_categorical_variables
+# Import helper functions
+from src.etl.utils import read_parquet_file, read_toml_config
 
 
 def run_inference(config_path: str) -> None:
