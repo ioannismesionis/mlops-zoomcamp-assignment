@@ -17,12 +17,11 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper function
-from src.etl.utils import load_pickle, read_toml_config
+from src.etl.utils import dump_pickle, load_pickle, read_toml_config
 
 # Define mlflow tracking parameters
-_EXPERIMENT_NAME = "random-forest-best-model"
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
-mlflow.set_experiment(_EXPERIMENT_NAME)
+# mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
 
 @task(retries=3, retry_delay_seconds=2, name="Train best random forest")
@@ -41,11 +40,19 @@ def train_and_log_model(data_path: str, params: Dict) -> None:
         rf.fit(X_train, y_train)
 
         # Evaluate model on the validation and test sets
+        best_rmse = 1_000_000_000_000_000  # Arbitrary large number to compare with RMSE
         val_rmse = mean_squared_error(y_val, rf.predict(X_val), squared=False)
         mlflow.log_metric("val_rmse", val_rmse)
 
+        if val_rmse < best_rmse:
+            best_rmse = val_rmse
+            best_rf = rf
+
         # Log the random forest regressor model
         mlflow.sklearn.log_model(rf, artifact_path="mlflow_models")
+
+    # Save best random forest regressor locally
+    dump_pickle(best_rf, "./src/etl/transformers/model.pkl")
 
 
 @click.command()
@@ -64,6 +71,9 @@ def run_register_model(config_path: str) -> None:
     Returns:
         None
     """
+    _EXPERIMENT_NAME = "random-forest-best-model"
+    mlflow.set_experiment(_EXPERIMENT_NAME)
+
     # Read the configuration file
     config = read_toml_config(config_path)
 

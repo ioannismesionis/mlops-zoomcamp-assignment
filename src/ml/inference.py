@@ -3,7 +3,6 @@ import os
 import sys
 import click
 import pandas as pd
-import mlflow
 from prefect import flow, task
 
 # Define entry point for paths

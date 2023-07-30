@@ -21,9 +21,8 @@ sys.path.append(CWD)
 from src.etl.utils import dump_pickle, read_parquet_file, read_toml_config
 
 # Define mlflow parameters for tracking
-mlflow.set_tracking_uri(
-    "http://127.0.0.1:5000"
-)  # mlflow.set_tracking_uri("sqlite:///mlflow.db")
+# mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
 
 @task(retries=3, retry_delay_seconds=2, name="Splitting into train and validation sets")
@@ -63,6 +62,7 @@ def run_hyperparameter_tuning(config_path: str) -> None:
     Returns:
         None
     """
+    # Set mlflow experiment for hyperparameter tuning
     mlflow.set_experiment("random-forest-hyperparameters")
 
     # Read the configuration file

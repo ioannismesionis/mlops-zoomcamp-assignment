@@ -14,8 +14,7 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper functions
-from src.etl.utils import (dump_pickle, load_pickle, read_parquet_file,
-                           read_toml_config)
+from src.etl.utils import dump_pickle, load_pickle, read_parquet_file, read_toml_config
 
 
 def drop_columns(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
@@ -68,40 +67,23 @@ def run_preprocessing(config_path: str) -> None:
     config = read_toml_config(config_path)
 
     # Unpack config file
-    pipeline = config["settings"]["pipeline"]
     drop_cols = config["preprocessing"]["drop_cols"]
     cat_variables = config["preprocessing"]["cat_variables"]
     preprocessed_data_path = config["preprocessing"]["processed_data"][
         "preprocessed_data_path"
     ]
 
-    # If "training" pipeline
-    if pipeline == "training":
-        # Unpack config file for the training pipeline
-        train_data_path = config["preprocessing"]["raw_data"]["train_data_path"]
+    # Unpack config file for the training pipeline
+    train_data_path = config["preprocessing"]["raw_data"]["train_data_path"]
 
-        # Run preprocessing steps
-        df = read_parquet_file(train_data_path)
-        df = drop_columns(df, drop_cols)
-        df = encode_categorical_variables(df, cat_variables)
+    # Run preprocessing steps
+    df = read_parquet_file(train_data_path)
+    df = drop_columns(df, drop_cols)
+    df = encode_categorical_variables(df, cat_variables)
 
-        # Save the preprocessed training data
-        save_path = os.path.join(preprocessed_data_path, "train_df.parquet")
-        df.to_parquet(save_path, engine="pyarrow")
-
-    # If "inference" pipeline
-    elif pipeline == "inference":
-        # Unpack config file for the training pipeline
-        test_data_path = config["preprocessing"]["raw_data"]["test_data_path"]
-
-        # Run preprocessing steps
-        df = read_parquet_file(test_data_path)
-        df = drop_columns(df, drop_cols)
-        df = encode_categorical_variables(df, cat_variables)
-
-        # Save the preprocessed training data
-        save_path = os.path.join(preprocessed_data_path, "test_df.parquet")
-        df.to_parquet(save_path, engine="pyarrow")
+    # Save the preprocessed training data
+    save_path = os.path.join(preprocessed_data_path, "train_df.parquet")
+    df.to_parquet(save_path, engine="pyarrow")
 
 
 if __name__ == "__main__":
