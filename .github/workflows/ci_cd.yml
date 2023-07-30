@@ -1,0 +1,25 @@
+name: GitHub CICD
+
+on:
+  push:
+    branches:
+      - main  # You can change 'main' to your primary branch name if it's different.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install black
+
+      - name: Run Black formatter
+        run: black .  # This will format all Python files in the repository root directory.
