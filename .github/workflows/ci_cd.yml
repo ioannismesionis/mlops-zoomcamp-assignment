@@ -16,10 +16,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.11'
+          python-version: '3.11'  # Replace 'x' with the desired Python version (e.g., 3.6, 3.7, 3.8).
 
       - name: Install dependencies
-        run: pip install black
+        run: pip install black pytest
 
       - name: Run Black formatter
-        run: black .  # This will format all Python files in the repository root directory.
+        run: black .
+
+      - name: Run Pytest
+        run: pytest tests/  # This will run pytest on all files in the 'tests/' directory.
