@@ -1,11 +1,9 @@
 # mlops-zoomcamp-assignment
 Final Assignment of the MLOps Zoomcamp Course (2023)
 
-# Car Price Prediction Project README
+## Car Price Prediction | Business Problem
 
 This Python project aims to predict the selling price of cars based on their features. It follows a series of steps to preprocess the data, perform hyperparameter tuning, register the best model, conduct inference on unseen data, and generate monitoring reports.
-
-## Business Problem
 
 Predicting the selling price of used cars is crucial for both buyers and sellers. For buyers, it helps in making informed decisions about the fair value of the vehicle they are interested in. For sellers, it helps in setting the right price to attract potential buyers and maximize profits. This project seeks to build a machine learning model that takes various car features as input and predicts the price at which a car can be sold.
 
@@ -102,4 +100,3 @@ For monitoring, open Evidently UI to visualize the generated reports.
 If you want to contribute to the project or report any issues, please follow the standard guidelines for contributing and issue reporting provided in the repository.
 
 We hope this project helps in predicting accurate car prices and enables better decision-making for both buyers and sellers. Happy predicting!
-
