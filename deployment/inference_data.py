@@ -16,4 +16,4 @@ car_details = {
 
 URL = "http://localhost:4545/predict"
 response = requests.post(URL, json=car_details)
-print(response)
+print(response.json())

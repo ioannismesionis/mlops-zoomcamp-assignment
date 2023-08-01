@@ -15,8 +15,7 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper functions
-from src.etl.utils import (dump_pickle, load_pickle, read_parquet_file,
-                           read_toml_config)
+from src.etl.utils import dump_pickle, load_pickle, read_parquet_file, read_toml_config
 
 
 def drop_columns(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:

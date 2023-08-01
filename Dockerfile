@@ -15,4 +15,3 @@ EXPOSE 4545
 
 # Set the entry point for the container 
 CMD ["python", "deployment/predict.py"]
-#ENTRYPOINT [ "python", "./src/ml/inference.py"]

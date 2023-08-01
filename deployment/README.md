@@ -1,7 +1,8 @@
 # Docker Deployment
 
 ### Step 1: Create Docker Image
-
+1. docker build -t flask-app . <br>
+2. docker run -p 4545:4545 flask-app
 
 ### Step 2: Define Inference Data
 manufacturer = ['ford', 'toyota', 'jeep', 'ram', 'cadillac', 'gmc', 'honda',
@@ -20,8 +21,5 @@ paint_color = ['white', 'red', 'silver', 'black', 'blue', 'brown', 'grey',
        'yellow', 'orange', 'custom', 'green', 'purple']
 
 
-
 ### Step 3: Run Prediction
-docker build -t flask-app .
-docker run -p 5000:5000 flask-app
-
+python deployment/inference_data.py

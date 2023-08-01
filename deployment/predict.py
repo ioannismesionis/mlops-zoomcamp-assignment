@@ -15,8 +15,6 @@ sys.path.append(CWD)
 from src.etl.preprocessing import encode_categorical_variables
 from src.ml.inference import get_best_model
 
-# from src.etl.utils import read_toml_config
-
 
 # Define Flask application
 app = Flask("price-prediction")
@@ -37,19 +35,20 @@ def predict_endpoint():
     _MODEL_RUN_PATH = "./src/etl/transformers/"
 
     raw_car_info = request.get_json()
-    pred_df = pd.DataFrame(raw_car_info)
+    pred_df = pd.DataFrame(raw_car_info, index=[0])
+    pred_df["price"] = -1  # Placeholder for price
 
-    pred_df = encode_categorical_variables(
+    pred_df = encode_categorical_variables.fn(
         pred_df,
         cat_variables=_CATEGORICAL_VARIABLES,
         fit_encoder=False,
         encoder_path=_CAT_ENCODER_PATH,
     )
 
-    model = get_best_model(_MODEL_RUN_PATH)
-    price_pred = model.predict(pred_df)
+    model = get_best_model.fn(_MODEL_RUN_PATH)
+    price_pred = model.predict(pred_df.drop("price", axis=1))
 
-    result = {"price": price_pred}
+    result = {"price": price_pred[0]}
 
     return jsonify(result)
 
