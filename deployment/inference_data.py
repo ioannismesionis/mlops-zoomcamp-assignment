@@ -14,6 +14,6 @@ car_details = {
     "long": -85.480000,
 }
 
-URL = "http://localhost:5000/predict"
+URL = "http://localhost:4545/predict"
 response = requests.post(URL, json=car_details)
-print(response.json())
+print(response)

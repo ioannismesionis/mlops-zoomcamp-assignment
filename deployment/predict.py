@@ -12,17 +12,10 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper functions
-from src.etl.preprocessing import drop_columns, encode_categorical_variables
+from src.etl.preprocessing import encode_categorical_variables
 from src.ml.inference import get_best_model
-from src.etl.utils import read_toml_config
 
-
-# @click.command()
-# @click.option(
-#     "--config_path",
-#     default="./src/config/config.toml",
-#     help="Path to config for orchestration",
-# )
+# from src.etl.utils import read_toml_config
 
 
 # Define Flask application
@@ -62,10 +55,4 @@ def predict_endpoint():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=9696)
-
-
-# def predict(features):
-#     X = dv.transform(features)
-#     preds = model.predict(X)
-#     return float(preds[0])
+    app.run(debug=True, host="0.0.0.0", port=4545)
