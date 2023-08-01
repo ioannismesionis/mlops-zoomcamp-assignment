@@ -1,5 +1,5 @@
 # Docker Deployment
-Follow steps to deploy FLask Application
+Follow steps to deploy Flask Application
 
 ### Step 1: Create Docker Image
 Execute the following commands in terminal:
