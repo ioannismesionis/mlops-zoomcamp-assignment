@@ -6,6 +6,7 @@ from typing import List
 import click
 import pandas as pd
 from feature_engine.encoding import MeanEncoder
+from loguru import logger
 from prefect import flow, task
 
 # Define entry point for paths
@@ -14,7 +15,8 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper functions
-from src.etl.utils import dump_pickle, load_pickle, read_parquet_file, read_toml_config
+from src.etl.utils import (dump_pickle, load_pickle, read_parquet_file,
+                           read_toml_config)
 
 
 def drop_columns(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
@@ -30,6 +32,7 @@ def encode_categorical_variables(
     encoder_path: str = None,
 ) -> pd.DataFrame:
     if fit_encoder:
+        logger.info("Fitting encoder set to True. Fitting mean encoder.")
         encoder = MeanEncoder(variables=cat_variables)
         encoder.fit(df.drop(target, axis=1), df[target])
 
@@ -41,6 +44,7 @@ def encode_categorical_variables(
         encoder = load_pickle(encoder_path)
 
     # Transform the data by encoding categorical variables
+    logger.info("Transforming categorical variables.")
     encoded_df = encoder.transform(df.drop(target, axis=1))
     df = pd.concat([encoded_df, df[target]], axis=1)
 
@@ -63,6 +67,8 @@ def run_preprocessing(config_path: str) -> None:
     Returns:
         None
     """
+    logger.info("Running the preprocessing pipeline")
+
     # Read the config file
     config = read_toml_config(config_path)
 
@@ -83,7 +89,10 @@ def run_preprocessing(config_path: str) -> None:
 
     # Save the preprocessed training data
     save_path = os.path.join(preprocessed_data_path, "train_df.parquet")
+    logger.info(f"Saving preprocessed training data to {save_path}")
     df.to_parquet(save_path, engine="pyarrow")
+
+    logger.info("Preprocessing pipeline completed")
 
 
 if __name__ == "__main__":

@@ -11,3 +11,4 @@ optuna
 xgboost
 black
 isort
+loguru

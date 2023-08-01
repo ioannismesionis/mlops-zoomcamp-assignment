@@ -2,13 +2,16 @@ import pickle
 
 import pandas as pd
 import toml
+from loguru import logger
 
 
 def read_toml_config(path: str) -> dict:
+    logger.info("Reading toml config file")
     return toml.load(path)
 
 
 def read_parquet_file(path: str) -> pd.DataFrame:
+    logger.info(f"Reading parquet file from path: {path}")
     return pd.read_parquet(path, engine="pyarrow")
 
 

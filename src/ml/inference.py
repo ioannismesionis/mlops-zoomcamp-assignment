@@ -1,7 +1,9 @@
 # Import python libraries
 import os
 import sys
+
 import click
+from loguru import logger
 from prefect import flow, task
 
 # Define entry point for paths
@@ -11,7 +13,7 @@ sys.path.append(CWD)
 
 # Import helper functions
 from src.etl.preprocessing import drop_columns, encode_categorical_variables
-from src.etl.utils import read_parquet_file, read_toml_config, load_pickle
+from src.etl.utils import load_pickle, read_parquet_file, read_toml_config
 
 
 @task(retries=3, retry_delay_seconds=2, name="Get best MLflow model")
@@ -24,7 +26,7 @@ def get_best_model(model_run_path: str) -> object:
     Returns:
         object: sklearn model that can predict.
     """
-    # return mlflow.pyfunc.load_model(model_run_path)
+    logger.info(f"Get the best registered model from mlflow from {model_run_path}")
     return load_pickle(os.path.join(model_run_path, "model.pkl"))
 
 
@@ -36,6 +38,16 @@ def get_best_model(model_run_path: str) -> object:
 )
 @flow(name="Running inference on unseen data")
 def run_inference(config_path: str) -> None:
+    """Run inference on unseen data."
+
+    Args:
+        config_path (str): Path to config
+
+    Returns:
+        None
+    """
+    logger.info("Running the inference on unseen data procedure")
+
     # 1. Read config
     config = read_toml_config(config_path)
 
@@ -65,6 +77,7 @@ def run_inference(config_path: str) -> None:
     )
 
     # Save the preprocessed test data
+    logger.info("Save preprocessed test data")
     save_path = os.path.join(preprocessed_data_path, "test_df.parquet")
     test_df.to_parquet(save_path, engine="pyarrow")
 
@@ -72,7 +85,8 @@ def run_inference(config_path: str) -> None:
     model = get_best_model(model_run_path)
     y_pred = model.predict(test_df.drop("price", axis=1))
 
-    print("Mean predictions:", y_pred.mean())
+    logger.info(f"Mean predictions: {y_pred.mean()}")
+    logger.info("Finished the inference on unseen data procedure")
 
 
 if __name__ == "__main__":

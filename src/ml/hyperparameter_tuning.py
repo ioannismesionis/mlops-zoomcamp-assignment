@@ -6,6 +6,7 @@ import click
 import mlflow
 import optuna
 import pandas as pd
+from loguru import logger
 from optuna.samplers import TPESampler
 from prefect import flow, task
 from sklearn.ensemble import RandomForestRegressor
@@ -21,7 +22,6 @@ sys.path.append(CWD)
 from src.etl.utils import dump_pickle, read_parquet_file, read_toml_config
 
 # Define mlflow parameters for tracking
-# mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
 
@@ -29,6 +29,8 @@ mlflow.set_tracking_uri("sqlite:///mlflow.db")
 def create_train_and_validation_sets(
     df: pd.DataFrame, target: str = "price", save=True
 ) -> pd.DataFrame:
+    logger.info("create_train_and_validation_sets")
+
     X = df.drop(target, axis=1)
     y = df[target]
 
@@ -40,6 +42,9 @@ def create_train_and_validation_sets(
     # Save training and validation sets
     if save:
         final_data_path = "./src/data/final"
+        logger.info(f"Saving training and datasets to path: {final_data_path}")
+
+        # Saving files
         dump_pickle((X_train, y_train), os.path.join(final_data_path, "train.pkl"))
         dump_pickle((X_val, y_val), os.path.join(final_data_path, "val.pkl"))
 
@@ -62,6 +67,8 @@ def run_hyperparameter_tuning(config_path: str) -> None:
     Returns:
         None
     """
+    logger.info("Starting hyperparameter tuning process")
+
     # Set mlflow experiment for hyperparameter tuning
     mlflow.set_experiment("random-forest-hyperparameters")
 
@@ -107,9 +114,12 @@ def run_hyperparameter_tuning(config_path: str) -> None:
             return rmse
 
     # Start optuna hyperparameter tuning procedure
+    logger.info("Starting optuna hyperparameter tuning procedure")
     sampler = TPESampler(seed=42)
     study = optuna.create_study(direction="minimize", sampler=sampler)
     study.optimize(objective, n_trials=num_trials)
+
+    logger.info("Hyperparameter tuning procedure completed")
 
 
 if __name__ == "__main__":

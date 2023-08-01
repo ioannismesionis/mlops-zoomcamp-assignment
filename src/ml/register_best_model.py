@@ -1,16 +1,17 @@
 # Import python libraries
 import os
 import sys
+import warnings
 from typing import Dict
 
 import click
 import mlflow
+from loguru import logger
 from mlflow.entities import ViewType
 from mlflow.tracking import MlflowClient
 from prefect import flow, task
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -73,6 +74,7 @@ def run_register_model(config_path: str) -> None:
     Returns:
         None
     """
+    logger.info("Starting registering the best model procedure")
     _EXPERIMENT_NAME = "random-forest-best-model"
     mlflow.set_experiment(_EXPERIMENT_NAME)
 
@@ -85,6 +87,9 @@ def run_register_model(config_path: str) -> None:
     final_data_path = config["training"]["processed_data"]["final_data_path"]
 
     # Get the all the runs from the hyperparameter experiment
+    logger.info(
+        f"Getting the last active mlflow experiments from experiment: {HYPERPARAMS_EXPERIMENT_NAME}"
+    )
     client = MlflowClient()
     experiment = client.get_experiment_by_name(HYPERPARAMS_EXPERIMENT_NAME)
     runs = client.search_runs(
@@ -95,6 +100,7 @@ def run_register_model(config_path: str) -> None:
     )
 
     # From all active runs, train and log the ML model performance
+    logger.info("Training and log random forest of different runs")
     for run in runs:
         train_and_log_model(data_path=final_data_path, params=run.data.params)
 
@@ -108,6 +114,8 @@ def run_register_model(config_path: str) -> None:
     # Register the best model in model registry of MLflow
     best_model_uri = "runs:/{}/model".format(best_run.info.run_id)
     mlflow.register_model(model_uri=best_model_uri, name="best-rf-regressor-model")
+
+    logger.info("Finishing registering the best model procedure")
 
 
 if __name__ == "__main__":

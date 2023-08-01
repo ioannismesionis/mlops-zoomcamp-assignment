@@ -1,14 +1,16 @@
 # Import python libraries
 import os
 import sys
-import click
 import warnings
+
+import click
+from loguru import logger
 
 warnings.filterwarnings("ignore")
 
 from evidently import ColumnMapping
-from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset, RegressionPreset
+from evidently.report import Report
 
 # Define entry point for paths
 CWD = os.getcwd()
@@ -35,6 +37,8 @@ def run_monitoring(config_path: str) -> None:
     Returns:
         None
     """
+    logger.info("Starting Monitoring procedure.")
+
     # Read the config file
     config = read_toml_config(config_path)
 
@@ -69,6 +73,7 @@ def run_monitoring(config_path: str) -> None:
     column_mapping.categorical_features = categorical_features
 
     # Create regression report of model performance
+    logger.info("Get the regression report.")
     regression_report = Report(metrics=[RegressionPreset()])
     regression_report.run(
         reference_data=reference_df,
@@ -77,15 +82,18 @@ def run_monitoring(config_path: str) -> None:
     )
 
     # Create data drift report
+    logger.info("Get the drift report.")
     drift_report = Report(metrics=[DataDriftPreset()])
     drift_report.run(
         reference_data=reference_df,
         current_data=current_df,
         column_mapping=column_mapping,
     )
-    print("Saving...")
+    logger.info("Saving reports...")
     regression_report.save_html("./workspace/test_suite.html")
     drift_report.save_html("./workspace/test_drift_report.html")
+
+    logger.info("Monitoring procedure finished.")
 
 
 if __name__ == "__main__":
