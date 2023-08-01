@@ -12,3 +12,4 @@ xgboost
 black
 isort
 loguru
+flask

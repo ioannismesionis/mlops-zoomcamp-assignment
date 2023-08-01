@@ -10,6 +10,9 @@ COPY . /app
 # Install Python dependencies from requirements.txt
 RUN pip install -r requirements.txt
 
+# Expose the port on which your Flask application will run
+EXPOSE 5000
+
 # Set the entry point for the container 
-# CMD ["python", "./src/ml/inference.py"]
-ENTRYPOINT [ "python", "./src/ml/inference.py"]
+CMD ["python", "./src/deployment/predict.py"]
+#ENTRYPOINT [ "python", "./src/ml/inference.py"]
