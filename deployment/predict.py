@@ -25,28 +25,6 @@ def predict_endpoint():
     Returns:
         dict: Price prediction
     """
-    # Define entry points for paths
-    # _CATEGORICAL_VARIABLES = [
-    #     "manufacturer",
-    #     "fuel",
-    #     "title_status",
-    #     "transmission",
-    #     "type",
-    #     "paint_color",
-    # ]
-    # raw_car_info = {
-    #     "year": 2018,
-    #     "odometer": 20856.0,
-    #     "manufacturer": "ford",
-    #     "fuel": "gas",
-    #     "title_status": "clean",
-    #     "transmission": "automatic",
-    #     "type": "SUV",
-    #     "paint_color": "red",
-    #     "lat": 32.590000,
-    #     "long": -85.480000,
-    # }
-
     _CAT_ENCODER_PATH = "./src/etl/transformers/mean_encoder.pkl"
     _MODEL_RUN_PATH = "./src/etl/transformers/model.pkl"
 
