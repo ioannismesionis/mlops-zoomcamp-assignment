@@ -4,8 +4,8 @@ Follow steps to deploy Flask Application
 ### Step 1: Create Docker Image
 Execute the following commands in terminal:
 
-1. docker build -t <APP-NAME> . <br>
-2. docker run -p 4545:4545 <APP-NAME>
+1. `docker build -t <APP-NAME> .` <br>
+2. `docker run -p 4545:4545 <APP-NAME>`
 
 **Note:** Replace the <APP-NAME> with any suitable name for the app (e.g. flask-app)
 

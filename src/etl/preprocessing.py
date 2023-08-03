@@ -15,7 +15,7 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper functions
-from src.etl.utils import dump_pickle, load_pickle, read_parquet_file, read_toml_config
+from src.etl.utils import dump_pickle, read_parquet_file, read_toml_config
 
 
 def drop_columns(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
@@ -24,30 +24,31 @@ def drop_columns(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
 
 @task(retries=3, retry_delay_seconds=2, name="Encode categorical features")
 def encode_categorical_variables(
-    df: pd.DataFrame,
-    cat_variables: list[str],
-    target: str = "price",
-    fit_encoder: bool = True,
-    encoder_path: str = None,
+    df: pd.DataFrame, cat_variables: list[str], target: str = "price"
 ) -> pd.DataFrame:
-    if fit_encoder:
-        logger.info("Fitting encoder set to True. Fitting mean encoder.")
-        encoder = MeanEncoder(variables=cat_variables)
-        encoder.fit(df.drop(target, axis=1), df[target])
+    """Encode categorical features using mean encoder.
 
-        # Save the encoder to a pre-specified path
-        encoder_path = f"./src/etl/transformers/mean_encoder.pkl"
-        dump_pickle(encoder, encoder_path)
+    Args:
+        df (pd.DataFrame): The raw dataframe
+        cat_variables (list[str]): Categorical variables to encode
+        target (str, optional): The name of the response variable. Defaults to "price".
 
-    else:
-        encoder = load_pickle(encoder_path)
+    Returns:
+        pd.DataFrame: Encoded dataframe.
+    """
+    logger.info("Fitting mean encoder transforming categorical variables")
+    encoder = MeanEncoder(variables=cat_variables)
 
-    # Transform the data by encoding categorical variables
-    logger.info("Transforming categorical variables.")
+    # Fit and Transform
+    encoder.fit(df.drop(target, axis=1), df[target])
     encoded_df = encoder.transform(df.drop(target, axis=1))
-    df = pd.concat([encoded_df, df[target]], axis=1)
 
-    return df
+    # Save the encoder to a pre-specified path
+    encoder_path = "./src/etl/transformers/mean_encoder.pkl"
+    logger.info(f"Saving encoder to path: {encoder_path}")
+    dump_pickle(encoder, encoder_path)
+
+    return pd.concat([encoded_df, df[target]], axis=1)
 
 
 @click.command()

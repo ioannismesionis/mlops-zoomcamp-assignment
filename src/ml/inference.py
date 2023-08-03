@@ -5,6 +5,8 @@ import sys
 import click
 from loguru import logger
 from prefect import flow, task
+from sklearn.metrics import mean_squared_error
+
 
 # Define entry point for paths
 CWD = os.getcwd()
@@ -12,22 +14,8 @@ os.chdir(CWD)
 sys.path.append(CWD)
 
 # Import helper functions
-from src.etl.preprocessing import drop_columns, encode_categorical_variables
+from src.etl.preprocessing import drop_columns
 from src.etl.utils import load_pickle, read_parquet_file, read_toml_config
-
-
-@task(retries=3, retry_delay_seconds=2, name="Get best MLflow model")
-def get_best_model(model_run_path: str) -> object:
-    """Get the best registered model from mlflow.
-
-    Args:
-        model_run_path (str): Run path to the model.
-
-    Returns:
-        object: sklearn model that can predict.
-    """
-    logger.info(f"Get the best registered model from mlflow from {model_run_path}")
-    return load_pickle(os.path.join(model_run_path, "model.pkl"))
 
 
 @click.command()
@@ -36,7 +24,6 @@ def get_best_model(model_run_path: str) -> object:
     default="./src/config/config.toml",
     help="Path to config for orchestration",
 )
-@flow(name="Running inference on unseen data")
 def run_inference(config_path: str) -> None:
     """Run inference on unseen data."
 
@@ -66,15 +53,11 @@ def run_inference(config_path: str) -> None:
 
     # 3. Drop columns
     test_df = drop_columns(test_df, drop_cols)
-    target = test_df["price"]
+    y_true = test_df["price"]
 
     # 4. Encode categorical variables
-    test_df = encode_categorical_variables(
-        test_df,
-        cat_variables=categorical_variables,
-        fit_encoder=False,
-        encoder_path=cat_encoder_path,
-    )
+    encoder = load_pickle(cat_encoder_path)
+    test_df = encoder.transform(test_df.drop("price", axis=1))
 
     # Save the preprocessed test data
     logger.info("Save preprocessed test data")
@@ -82,10 +65,11 @@ def run_inference(config_path: str) -> None:
     test_df.to_parquet(save_path, engine="pyarrow")
 
     # 5. Load model
-    model = get_best_model(model_run_path)
-    y_pred = model.predict(test_df.drop("price", axis=1))
+    model = load_pickle(model_run_path)
+    y_pred = model.predict(test_df)
 
-    logger.info(f"Mean predictions: {y_pred.mean()}")
+    rmse = mean_squared_error(y_true, y_pred, squared=True)
+    logger.info(f"Root Mean Square Error (Unseen Data): {rmse}")
     logger.info("Finished the inference on unseen data procedure")
 
 
